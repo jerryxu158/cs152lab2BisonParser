@@ -12,4 +12,11 @@
 [ \t]	; // ignore all whitespace
 "("		{return LEFT_PAREN;}
 ")"		{return RIGHT_PAREN;}
+"+"     {return PLUS;}
+"-"     {return MINUS;}
+"*"     {return MULT;}
+"/"     {return DIV;}
+"="     {return EQ;}
+[0-9]+  {return NUM;}
+
 %%
