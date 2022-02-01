@@ -6,7 +6,7 @@
 extern int yylex();
 extern int yyparse();
 extern FILE* yyin;
-
+//i think everything 
 void yyerror(const char* s);
 %}
 
@@ -23,6 +23,9 @@ void yyerror(const char* s);
 %%
 
 expr: factor op factor Exprs eq
+keyword: 
+ident:
+operators:
 Exprs: factor op factor Exprs
       | 
 factor: NUM 
