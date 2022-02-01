@@ -23,14 +23,35 @@ void yyerror(const char* s);
 }
 
 %%
-beginP: functions
+beginP: functions {printf("beginP -> functions\n");}
 functions: function functions
-function: FUNC IDENT SCOLON BPARAM declarations EPARAM BLOCAL declarations ELOCAL BBODY lines EBODY
-        | %empty
-line: declaration
-    | assignment
-    | weakKey
+          | %empty
+function: FUNC IDENT SCOLON BPARAM declarations EPARAM BLOCAL declarations ELOCAL BBODY lines EBODY {printf("function -> stuff\n");}
+lines: line lines {printf("lines -> line\n");}
+      | %empty {printf("lines -> epsilon\n");}
+line: If
+    | returns
+
+If: IF condition THEN action SCOLON EIf ENDIF SCOLON
+
+EIf: ELSE IF condition Then action EIf
+    | ELSE action 
     | %empty
+
+returns: RET val
+
+val: func
+    |math
+math: NUM
+    | val op val
+
+func: 
+
+op: ADD
+    |SUB
+    |MULT
+    |DIV
+    |MODULO
 declarations: declaration declarations
             | %empty
 declaration: IDENT COLON INT SCOLON
