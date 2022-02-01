@@ -10,33 +10,31 @@ extern FILE* yyin;
 void yyerror(const char* s);
 %}
 
-%left LEFT_PAREN RIGHT_PAREN MINUS MULT DIV PLUS NUM IDENT
+%left LEFT_PAREN RIGHT_PAREN MINUS MULT DIV PLUS MODULO LEFT_BRACK RIGHT_BRACK COLON ASSIGN LESSER GREATER NUM IDENT 
+%left LTE GTE NOTEQ ARR FUNC BPARAM EPARAM BLOCAL ELOCAL BBODY EBODY INT OF IF THEN ENDIF ELSE WHILE DO BLOOP ELOOP CONT BREAK READ
+%left NOT T F RET FOR
 %type <number> NUM
 %type <ident> IDENT 
-%token EQ
-%start expr 
+%token EQUALSCOLON
+%start beginP 
 %union{
   char ident[20];
   int number;
 }
 
 %%
+beginP: functions
+functions: function functions
+function: FUNC IDENT SCOLON BPARAM declarations EPARAM BLOCAL declarations ELOCAL BBODY lines EBODY
+        | %empty
+line: declaration
+    | assignment
+    | weakKey
+    | %empty
+declarations: declaration declarations
+            | %empty
+declaration: IDENT COLON INT SCOLON
 
-expr: factor op factor Exprs eq
-keyword: 
-ident:
-operators:
-Exprs: factor op factor Exprs
-      | 
-factor: NUM 
-      | paren 
-paren: LEFT_PAREN paren RIGHT_PAREN paren 
-    | expr
-op: PLUS
-    | MINUS
-    | MULT
-    | DIV
-eq: EQ
 ;
 
 %%
