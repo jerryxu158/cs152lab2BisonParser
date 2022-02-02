@@ -15,7 +15,7 @@ void yyerror(const char* s);
 %left NOT T F RET FOR
 %type <number> NUM
 %type <ident> IDENT 
-%token EQUALSCOLON
+%token EQUAL SCOLON
 %start beginP 
 %union{
   char ident[20];
@@ -27,25 +27,50 @@ beginP: functions {printf("beginP -> functions\n");}
 functions: function functions
           | %empty
 function: FUNC IDENT SCOLON BPARAM declarations EPARAM BLOCAL declarations ELOCAL BBODY lines EBODY {printf("function -> stuff\n");}
-lines: line lines {printf("lines -> line\n");}
+
+declarations: IDENT COLON INT
+            | IDENT COLON ARR LEFT_BRACK NUM RIGHT_BRACK OF INT
+
+lines: line lines {printf("lines -> line lines\n");}
       | %empty {printf("lines -> epsilon\n");}
-line: If
+line: assignment
+    | ifThen
+    | loop
+    | read
+    | write
+    | CONT
+    | BREAK
     | returns
 
-If: IF condition THEN action SCOLON EIf ENDIF SCOLON
+assignment: IDENT ASSIGN val
 
+ifThen: IF condition THEN lines SCOLON EIf ENDIF SCOLON
+
+condition: val comp val
+          | NOT val comp val
+
+comp: LTE
+    |GTE
+    |GREATER
+    |LESSER
+    |NOTEQ
+    |EQUAL
 EIf: ELSE IF condition Then action EIf
     | ELSE action 
     | %empty
+loop: WHILE condition BLOOP lines ELOOP
+    | DO BLOOP lines ELOOP WHILE condition
 
-returns: RET val
+returns: RET val SCOLON
 
 val: func
     |math
+
 math: NUM
+    | IDENT
     | val op val
 
-func: 
+func: IDENT LEFT_PAREN val RIGHT_PAREN
 
 op: ADD
     |SUB
