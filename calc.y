@@ -12,15 +12,10 @@ void yyerror(const char* s);
 
 %left LEFT_PAREN RIGHT_PAREN MINUS MULT DIV PLUS MODULO LEFT_BRACK RIGHT_BRACK COLON ASSIGN LESSER GREATER NUM IDENT 
 %left LTE GTE NOTEQ ARR FUNC BPARAM EPARAM BLOCAL ELOCAL BBODY EBODY INT OF IF THEN ENDIF ELSE WHILE DO BLOOP ELOOP CONT BREAK READ
-%left NOT T F RET FOR
-%type <number> NUM
-%type <ident> IDENT 
+%left WRITE NOT T F RET 
 %token EQUAL SCOLON
 %start beginP 
-%union{
-  char ident[20];
-  int number;
-}
+
 
 %%
 beginP: functions {printf("beginP -> functions\n");}
@@ -55,11 +50,17 @@ comp: LTE
     |LESSER
     |NOTEQ
     |EQUAL
-EIf: ELSE IF condition Then action EIf
-    | ELSE action 
+
+EIf: ELSE IF condition THEN lines EIf
+    | ELSE lines 
     | %empty
+
 loop: WHILE condition BLOOP lines ELOOP
     | DO BLOOP lines ELOOP WHILE condition
+
+read: READ IDENT
+
+write: WRITE IDENT
 
 returns: RET val SCOLON
 
@@ -72,14 +73,15 @@ math: NUM
 
 func: IDENT LEFT_PAREN val RIGHT_PAREN
 
-op: ADD
-    |SUB
+op: PLUS
+    |MINUS
     |MULT
     |DIV
     |MODULO
 declarations: declaration declarations
             | %empty
 declaration: IDENT COLON INT SCOLON
+            | IDENT COLON ARR LEFT_BRACK NUM RIGHT_BRACK OF INT
 
 ;
 
