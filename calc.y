@@ -2,86 +2,84 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
 extern int yylex();
 extern int yyparse();
 extern FILE* yyin;
 //i think everything 
 void yyerror(const char* s);
 %}
+%define parse.error verbose
 
 %left LEFT_PAREN RIGHT_PAREN MINUS MULT DIV PLUS MODULO LEFT_BRACK RIGHT_BRACK COLON ASSIGN LESSER GREATER NUM IDENT 
-%left LTE GTE NOTEQ ARR FUNC BPARAM EPARAM BLOCAL ELOCAL BBODY EBODY INT OF IF THEN ENDIF ELSE WHILE DO BLOOP ELOOP CONT BREAK READ
-%left WRITE NOT T F RET 
+%left LTE GTE NOTEQ ARR FUNC BPARAM EPARAM BLOCAL ELOCAL BBODY EBODY INT OF IF THEN ENDIF ELSE WHILE DO BLOOP ENDLOOP CONT BREAK READ
+%left WRITE NOT T F RET FOR
 %token EQUAL SCOLON
 %start beginP 
 
 
 %%
 beginP: functions {printf("beginP -> functions\n");}
-functions: function functions
-          | %empty
+functions: function functions {printf("functions -> function functions\n");}
+          | %empty {printf("functions -> epsilon\n");}
 function: FUNC IDENT SCOLON BPARAM declarations EPARAM BLOCAL declarations ELOCAL BBODY lines EBODY {printf("function -> stuff\n");}
-
-declarations: IDENT COLON INT
-            | IDENT COLON ARR LEFT_BRACK NUM RIGHT_BRACK OF INT
 
 lines: line lines {printf("lines -> line lines\n");}
       | %empty {printf("lines -> epsilon\n");}
-line: assignment
-    | ifThen
-    | loop
-    | read
-    | write
-    | CONT
-    | BREAK
-    | returns
+line: assignment {printf("line-> assignment\n");}
+    | ifThen {printf("line-> ifThen\n");}
+    | loop {printf("line-> loop\n");}
+    | read {printf("line -> read\n");}
+    | write {printf("line -> write\n");}
+    | CONT {printf("line -> CONT(terminal)\n");}
+    | BREAK {printf("line -> break(terminal)\n");}
+    | returns {printf("line -> returns\n");}
 
-assignment: IDENT ASSIGN val
+assignment: IDENT ASSIGN val SCOLON{printf("assignment -> IDENT ASSIGN val\n");}
 
-ifThen: IF condition THEN lines SCOLON EIf ENDIF SCOLON
+ifThen: IF condition THEN lines EIf ENDIF SCOLON {printf("ifThen -> if statement\n");}
 
-condition: val comp val
-          | NOT val comp val
+EIf: ELSE lines {printf("EIf -> else\n");}
+    | %empty {printf("EIf -> epsilon\n");}
 
-comp: LTE
-    |GTE
-    |GREATER
-    |LESSER
-    |NOTEQ
-    |EQUAL
+condition: val comp val {printf("condition -> val comp val\n");}
+          | NOT val comp val {printf("condition -> not val comp val\n");}
 
-EIf: ELSE IF condition THEN lines EIf
-    | ELSE lines 
-    | %empty
+comp: LTE {printf("comp -> LTE\n");}
+    |GTE {printf("comp -> GTE\n");}
+    |GREATER {printf("comp -> greater\n");}
+    |LESSER {printf("comp -> lesser\n");}
+    |NOTEQ {printf("comp -> noteq\n");}
+    |EQUAL {printf("comp -> equal\n");}
 
-loop: WHILE condition BLOOP lines ELOOP
-    | DO BLOOP lines ELOOP WHILE condition
+loop: WHILE condition BLOOP lines ENDLOOP SCOLON {printf("loop -> while\n");}
+    | DO BLOOP lines ENDLOOP WHILE condition {printf("loop -> do\n");}
 
-read: READ IDENT
+read: READ IDENT SCOLON{printf("read -> read Ident\n");}
 
-write: WRITE IDENT
+write: WRITE IDENT SCOLON{printf("write -> write ident\n");}
 
-returns: RET val SCOLON
+returns: RET val SCOLON {printf("returns -> ret val scolon\n");}
 
-val: func
-    |math
+val: func {printf("val -> func\n");}
+    |math {printf("val -> math\n");}
 
-math: NUM
-    | IDENT
-    | val op val
+math: NUM {printf("math -> num\n");}
+    | IDENT {printf("math -> Ident\n");}
+    | val op val {printf("math -> val op val\n");}
 
-func: IDENT LEFT_PAREN val RIGHT_PAREN
+func: IDENT LEFT_PAREN val RIGHT_PAREN {printf("func -> ident (val)\n");}
+    | func op func {printf("func -> func op func\n");}
 
-op: PLUS
-    |MINUS
-    |MULT
-    |DIV
-    |MODULO
-declarations: declaration declarations
-            | %empty
-declaration: IDENT COLON INT SCOLON
-            | IDENT COLON ARR LEFT_BRACK NUM RIGHT_BRACK OF INT
+op: PLUS {printf("op -> +\n");}
+    |MINUS {printf("op -> -\n");}
+    |MULT {printf("op -> *\n");}
+    |DIV {printf("op -> div\n");}
+    |MODULO {printf("op -> mod\n");}
+
+declarations: declaration declarations {printf("declarations -> declaration declarations\n");}
+            | %empty {printf("declaration -> epsilon\n");}
+declaration:IDENT COLON ARR LEFT_BRACK NUM RIGHT_BRACK OF INT {printf("declaration array\n");}
+            |IDENT COLON INT SCOLON {printf("declaration -> integer\n");}
 
 ;
 

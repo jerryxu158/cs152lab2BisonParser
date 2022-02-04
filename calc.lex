@@ -2,10 +2,9 @@
 
 %{
 #include <stdio.h>
-
-#define YY_DECL int yylex(void)
-
 #include "calc.tab.h"
+
+
 int col = 1, row = 1;
 %}
 
@@ -49,7 +48,7 @@ UNKNOWN  [^TAB NEWL comment CMMA COLN SEMI NE GTE LTE MOD RP LP RB LB GT LT EQUA
 {RB}           {printf("R_SQUARE_BRACKET\n"); col++; return(RIGHT_BRACK);}
 {SEMI}         {printf("SEMICOLON\n"); col++; return(SCOLON);}
 {COLN}         {printf("COLON\n"); col++; return(COLON);}
-{comment}      { return(COMMENT);}   
+{comment}      {}   
 {EQUATE}       {printf("EQ\n"); col++; return(EQUAL);}
 {ASGN}         {printf("ASSIGNED\n"); col++; return(ASSIGN);}
 {LT}           {printf("LT\n"); col++; return(LESSER);}
@@ -74,7 +73,7 @@ UNKNOWN  [^TAB NEWL comment CMMA COLN SEMI NE GTE LTE MOD RP LP RB LB GT LT EQUA
 "while"        {printf("WHILE\n"); col += 5; return(WHILE);}
 "do"           {printf("DO\n"); col += 2; return(DO);}
 "beginloop"    {printf("BEGINLOOP\n"); col += 9; return(BLOOP);}
-"endloop"      {printf("ENDLOOP\n"); col += 7; return(ELOOP);}
+"endloop"      {printf("ENDLOOP\n"); col += 7; return(ENDLOOP);}
 "continue"     {printf("CONTINUE\n"); col += 8; return(CONT);}
 "break"        {printf("BREAK\n"); col += 5; return(BREAK);}
 "read"         {printf("READ\n"); col += 4; return(READ);}
@@ -89,9 +88,9 @@ UNKNOWN  [^TAB NEWL comment CMMA COLN SEMI NE GTE LTE MOD RP LP RB LB GT LT EQUA
 {TAB}          {col += 4;}
 {INVALN}       {printf("Error at line %d, column %d: identifier \"%s\" must begin with a letter\n", row, col, yytext); exit(1);}
 {INVALU}       {printf("Error at line %d, column %d: identifier \"%s\" cannot end with an underscore\n", row, col, yytext); exit(1);}
-{ID}           {printf("IDENT %s\n", yytext); col += yyleng; sscanf(yytext, "%s", yylval.ident); return(IDENT);}
-{SID}          {printf("IDENT %s\n", yytext); col += yyleng;sscanf(yytext, "%s", yylval.ident); return(IDENT);}
-{DIGIT}+       {printf("NUMBER %s\n", yytext); col += yyleng; yylval.number = atoi(yytext); return (NUM);}
+{ID}           {printf("IDENT %s\n", yytext); col += yyleng; return(IDENT);}
+{SID}          {printf("IDENT %s\n", yytext); col += yyleng; return(IDENT);}
+{DIGIT}+       {printf("NUMBER %s\n", yytext); col += yyleng; return (NUM);}
 
 {UNKNOWN}      {printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n", row, col, yytext); exit(1);}
 %%
