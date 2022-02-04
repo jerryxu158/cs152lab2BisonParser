@@ -30,12 +30,15 @@ line: assignment {printf("line-> assignment\n");}
     | loop {printf("line-> loop\n");}
     | read {printf("line -> read\n");}
     | write {printf("line -> write\n");}
-    | CONT {printf("line -> CONT(terminal)\n");}
-    | BREAK {printf("line -> break(terminal)\n");}
+    | CONT SCOLON{printf("line -> CONT(terminal)\n");}
+    | BREAK SCOLON{printf("line -> break(terminal)\n");}
     | returns {printf("line -> returns\n");}
 
-assignment: IDENT ASSIGN val SCOLON{printf("assignment -> IDENT ASSIGN val\n");}
+assignment: IDENT ASSIGN val SCOLON{printf("assignment -> variable ASSIGN val\n");}
+           | IDENT LEFT_BRACK value RIGHT_BRACK ASSIGN val SCOLON {printf("assignment -> array val val\n");}
 
+value: NUM
+    | IDENT
 ifThen: IF condition THEN lines EIf ENDIF SCOLON {printf("ifThen -> if statement\n");}
 
 EIf: ELSE lines {printf("EIf -> else\n");}
@@ -64,8 +67,10 @@ val: func {printf("val -> func\n");}
     |math {printf("val -> math\n");}
 
 math: NUM {printf("math -> num\n");}
+    | IDENT LEFT_BRACK value RIGHT_BRACK
     | IDENT {printf("math -> Ident\n");}
     | val op val {printf("math -> val op val\n");}
+    |LEFT_PAREN val RIGHT_PAREN
 
 func: IDENT LEFT_PAREN val RIGHT_PAREN {printf("func -> ident (val)\n");}
     | func op func {printf("func -> func op func\n");}
@@ -78,7 +83,7 @@ op: PLUS {printf("op -> +\n");}
 
 declarations: declaration declarations {printf("declarations -> declaration declarations\n");}
             | %empty {printf("declaration -> epsilon\n");}
-declaration:IDENT COLON ARR LEFT_BRACK NUM RIGHT_BRACK OF INT {printf("declaration array\n");}
+declaration:IDENT COLON ARR LEFT_BRACK NUM RIGHT_BRACK OF INT SCOLON {printf("declaration array\n");}
             |IDENT COLON INT SCOLON {printf("declaration -> integer\n");}
 
 ;
